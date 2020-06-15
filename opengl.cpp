@@ -79,40 +79,31 @@ int main()
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(400, 400, 0));
         glm::mat4 backgroundMVP = viewProj * model;
 
-        glm::mat4 shapeModel0 = glm::translate(glm::mat4(1.0f), glm::vec3(120, 680, 0));
-        glm::mat4 shapeMVP0 = viewProj * shapeModel0;
-
-        glm::mat4 shapeModel1 = glm::translate(glm::mat4(1.0f), glm::vec3(393, 680, 0));
-        glm::mat4 shapeMVP1 = viewProj * shapeModel1;
-
-        glm::mat4 shapeModel2 = glm::translate(glm::mat4(1.0f), glm::vec3(666, 680, 0));
-        glm::mat4 shapeMVP2 = viewProj * shapeModel2;
-
-        glm::mat4 shapeModel3 = glm::translate(glm::mat4(1.0f), glm::vec3(120, 407, 0));
-        glm::mat4 shapeMVP3 = viewProj * shapeModel3;
-
-        glm::mat4 shapeModel4 = glm::translate(glm::mat4(1.0f), glm::vec3(393, 407, 0));
-        glm::mat4 shapeMVP4 = viewProj * shapeModel4;
-
-        glm::mat4 shapeModel5 = glm::translate(glm::mat4(1.0f), glm::vec3(666, 407, 0));
-        glm::mat4 shapeMVP5 = viewProj * shapeModel5;
-
-        glm::mat4 shapeModel6 = glm::translate(glm::mat4(1.0f), glm::vec3(120, 134, 0));
-        glm::mat4 shapeMVP6 = viewProj * shapeModel6;
-
-        glm::mat4 shapeModel7 = glm::translate(glm::mat4(1.0f), glm::vec3(393, 134, 0));
-        glm::mat4 shapeMVP7 = viewProj * shapeModel7;
-
-        glm::mat4 shapeModel8 = glm::translate(glm::mat4(1.0f), glm::vec3(666, 134, 0));
-        glm::mat4 shapeMVP8 = viewProj * shapeModel8;
-
-        glm::mat4 circles[] = {
-                shapeMVP0, shapeMVP1, shapeMVP7, shapeMVP4, shapeMVP8
+        unsigned int shapeScreenPositions[9][3] = {         // bottom left origin
+                {120, 680, 0}, {393, 680, 0}, {666, 680, 0},
+                {120, 407, 0}, {393, 407, 0}, {666, 407, 0},
+                {120, 134, 0}, {393, 134, 0}, {666, 134, 0}
         };
 
-        glm::mat4 crosses[] = {
-                shapeMVP2, shapeMVP3, shapeMVP5, shapeMVP6
+        unsigned int GLFWshapeScreenPositions[9][3] = {     // top left origin
+                {120, 120, 0}, {393, 120, 0}, {666, 120, 0},
+                {120, 393, 0}, {393, 393, 0}, {666, 393, 0},
+                {120, 666, 0}, {393, 666, 0}, {666, 666, 0}
         };
+
+        glm::mat4 shapeMVPS[9];
+
+        for (auto i = 0; i < 9; i++)
+        {
+            auto& ssp = shapeScreenPositions[i];
+            glm::mat4 shapeModel = glm::translate(glm::mat4(1.0f), glm::vec3(ssp[0], ssp[1], ssp[2]));
+            shapeMVPS[i] = viewProj * shapeModel;
+        }
+
+        glm::mat4 circles[9];
+        glm::mat4 crosses[9];
+
+        bool grid[9] = { false };
 
         Shader shader("res/shaders/test.shader");
 
@@ -149,6 +140,20 @@ int main()
             {
                 shader.SetUniformMat4f("u_MVP", shapeMVP);
                 renderer.Draw(shapesVA, ib, shader);
+            }
+
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            {
+                double xpos, ypos;
+                glfwGetCursorPos(window, &xpos, &ypos);
+                std::cout << "Positions: " << xpos << " " << ypos << std::endl;
+                auto& GLssp = GLFWshapeScreenPositions;
+                for (auto i = 0; i < 9; i++)
+                    if (xpos >= GLssp[i][0]-100  && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i]) {
+                        grid[i] = true;
+                        crosses[i] = shapeMVPS[i];
+                        break;
+                    }
             }
 
             glfwSwapBuffers(window);
