@@ -152,7 +152,14 @@ int main()
                     if (xpos >= GLssp[i][0]-100  && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i]) {
                         grid[i] = true;
                         crosses[i] = shapeMVPS[i];
+                        for (auto j = 0; j < 9; j++)
+                            if (!grid[j]) {
+                                grid[j] = true;
+                                circles[j] = shapeMVPS[j];
+                                break;
+                            }
                         break;
+
                     }
             }
 
