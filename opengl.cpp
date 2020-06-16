@@ -11,6 +11,28 @@
 
 #include "tests/TestClearColor.h"
 
+bool CheckWin(glm::mat4 *side, glm::mat4 *shapeMVPS)
+{
+    bool winCases[8] = {
+            side[0] == shapeMVPS[0] && side[1] == shapeMVPS[1] && side[2] == shapeMVPS[2],
+            side[3] == shapeMVPS[3] && side[4] == shapeMVPS[4] && side[5] == shapeMVPS[5],
+            side[6] == shapeMVPS[6] && side[7] == shapeMVPS[7] && side[8] == shapeMVPS[8],
+            side[0] == shapeMVPS[0] && side[4] == shapeMVPS[4] && side[8] == shapeMVPS[8],
+            side[2] == shapeMVPS[2] && side[4] == shapeMVPS[4] && side[6] == shapeMVPS[6],
+            side[0] == shapeMVPS[0] && side[3] == shapeMVPS[3] && side[6] == shapeMVPS[6],
+            side[1] == shapeMVPS[1] && side[4] == shapeMVPS[4] && side[7] == shapeMVPS[7],
+            side[2] == shapeMVPS[2] && side[5] == shapeMVPS[5] && side[8] == shapeMVPS[8]
+    };
+
+    for (bool winCase : winCases)
+    {
+        if (winCase)
+            return true;
+    }
+    return false;
+}
+
+
 int main()
 {
     GLFWwindow* window;
@@ -103,6 +125,7 @@ int main()
         glm::mat4 circles[9];
         glm::mat4 crosses[9];
 
+        bool gameOver = false;
         bool grid[9] = { false };
 
         Shader shader("res/shaders/test.shader");
@@ -142,24 +165,37 @@ int main()
                 renderer.Draw(shapesVA, ib, shader);
             }
 
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !gameOver)
             {
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
-                std::cout << "Positions: " << xpos << " " << ypos << std::endl;
                 auto& GLssp = GLFWshapeScreenPositions;
                 for (auto i = 0; i < 9; i++)
-                    if (xpos >= GLssp[i][0]-100  && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i]) {
+                    if (xpos >= GLssp[i][0]-100 && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i]) {
                         grid[i] = true;
                         crosses[i] = shapeMVPS[i];
+                        if (CheckWin(crosses, shapeMVPS)) {
+                            gameOver = true;
+                            std::cout << "Win" << std::endl;
+                            break;
+                        }
+                        std::vector<unsigned short int> freeCells;
                         for (auto j = 0; j < 9; j++)
-                            if (!grid[j]) {
-                                grid[j] = true;
-                                circles[j] = shapeMVPS[j];
-                                break;
-                            }
+                            if (!grid[j])
+                                freeCells.push_back(j);
+                        if (freeCells.empty()) {
+                            gameOver = true;
+                            std::cout << "Draw" << std::endl;
+                            break;
+                        }
+                        auto index = freeCells[rand() % freeCells.size()];
+                        grid[index] = true;
+                        circles[index] = shapeMVPS[index];
+                        if (CheckWin(circles, shapeMVPS)) {
+                            gameOver = true;
+                            std::cout << "Lose" << std::endl;
+                        }
                         break;
-
                     }
             }
 
