@@ -171,7 +171,8 @@ int main()
                 glfwGetCursorPos(window, &xpos, &ypos);
                 auto& GLssp = GLFWshapeScreenPositions;
                 for (auto i = 0; i < 9; i++)
-                    if (xpos >= GLssp[i][0]-100 && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i]) {
+                    if (xpos >= GLssp[i][0]-100 && xpos <= GLssp[i][0]+100 && ypos >= GLssp[i][1]-100  && ypos <= GLssp[i][1]+100 && !grid[i])
+                    {
                         grid[i] = true;
                         crosses[i] = shapeMVPS[i];
                         if (CheckWin(crosses, shapeMVPS)) {
@@ -197,6 +198,17 @@ int main()
                         }
                         break;
                     }
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && gameOver)
+            {
+                gameOver = false;
+                glm::mat4 newMat4 [9];
+                bool newGrid [9] = { false };
+                memcpy(crosses, newMat4, sizeof(crosses));
+                memcpy(circles, newMat4, sizeof(circles));
+                memcpy(grid, newGrid, sizeof(grid));
+                std::cout << "Reset" << std::endl;
             }
 
             glfwSwapBuffers(window);
