@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 #include "Texture.h"
 
@@ -205,10 +206,9 @@ int main()
                 gameOver = false;
                 glm::mat4 newMat4 [9];
                 bool newGrid [9] = { false };
-                memcpy(crosses, newMat4, sizeof(crosses));
-                memcpy(circles, newMat4, sizeof(circles));
-                memcpy(grid, newGrid, sizeof(grid));
-                std::cout << "Reset" << std::endl;
+                std::memcpy(crosses, newMat4, sizeof(crosses));
+                std::memcpy(circles, newMat4, sizeof(circles));
+                std::memcpy(grid, newGrid, sizeof(grid));
             }
 
             glfwSwapBuffers(window);
