@@ -1,4 +1,5 @@
 .idea/
-cmake-build-debug/*
+.vscode/
+build/*
 dep/
-!cmake-build-debug/res/
+!build/res/
