@@ -10,7 +10,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "tests/TestClearColor.h"
 
 bool CheckWin(glm::mat4 *side, glm::mat4 *shapeMVPS)
 {
