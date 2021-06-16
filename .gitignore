@@ -3,3 +3,5 @@
 build/*
 dep/
 !build/res/
+
+stb_image.h
